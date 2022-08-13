@@ -2,6 +2,8 @@ package com.example.linkstore.application.di
 
 import android.content.Context
 import com.example.linkstore.application.db.AppDb
+import com.example.linkstore.features.linkprocessor.ILinkProcessor
+import com.example.linkstore.features.linkprocessor.LinkProcessor
 import com.example.linkstore.features.savelink.data.local.dao.LinkDao
 import dagger.Module
 import dagger.Provides
@@ -23,4 +25,8 @@ object MainModule {
     @Provides
     @Singleton
     fun provideLinkDao(appDb: AppDb): LinkDao = appDb.linkDao
+
+    @Provides
+    fun provideLinkProcessor(impl: LinkProcessor): ILinkProcessor = impl
+
 }
