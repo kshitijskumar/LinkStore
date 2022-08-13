@@ -7,5 +7,5 @@ data class ProcessedLinkData(
 )
 
 enum class LinkProcessorError {
-    INVALID_LINK, INVALID_HOST
+    INVALID_LINK, INVALID_HOST, NO_LINK
 }

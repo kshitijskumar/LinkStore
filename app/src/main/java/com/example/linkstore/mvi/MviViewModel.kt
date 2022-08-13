@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.*
 @Suppress("LeakingThis")
 abstract class MviViewModel<STATE, INTENT, PARTIAL_CHANGE : BasePartialChange<STATE>, SIDE_EFFECT> : ViewModel() {
 
-    private val intentChannel = Channel<INTENT>()
+    private val intentChannel = Channel<INTENT>(capacity = Channel.BUFFERED)
 
     private val _sideEffect = MutableSharedFlow<SIDE_EFFECT>()
     val sideEffect: Flow<SIDE_EFFECT> = _sideEffect.asSharedFlow()
@@ -17,7 +17,7 @@ abstract class MviViewModel<STATE, INTENT, PARTIAL_CHANGE : BasePartialChange<ST
 
     abstract fun getInitialState(): STATE
     abstract fun Flow<INTENT>.toPartialChange(): Flow<PARTIAL_CHANGE>
-    abstract fun getSideEffects(flow: Flow<PARTIAL_CHANGE>): List<SIDE_EFFECT>
+    abstract fun getSideEffects(change: PARTIAL_CHANGE): List<SIDE_EFFECT>
 
     init {
         val initialState = getInitialState()
@@ -27,17 +27,18 @@ abstract class MviViewModel<STATE, INTENT, PARTIAL_CHANGE : BasePartialChange<ST
             .toPartialChange()
             .splitSideEffect()
             .scan(initialState) { oldState, change -> change.reduce(oldState) }
-            .stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = initialState)
+            .stateIn(viewModelScope, started = SharingStarted.Eagerly, initialValue = initialState)
     }
 
-    fun processIntent(intent: INTENT) = intentChannel.trySend(intent)
+    suspend fun processIntent(intent: INTENT) = intentChannel.send(intent)
 
     private fun Flow<PARTIAL_CHANGE>.splitSideEffect(): Flow<PARTIAL_CHANGE> {
-        val sideEffects = getSideEffects(this)
-        sideEffects.forEach {
-            _sideEffect.tryEmit(it)
+        return this.onEach { change ->
+            val sideEffects = getSideEffects(change)
+            sideEffects.forEach { effect ->
+                _sideEffect.emit(effect)
+            }
         }
-        return this
     }
 
 }

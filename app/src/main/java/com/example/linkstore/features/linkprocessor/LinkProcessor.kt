@@ -12,7 +12,7 @@ class LinkProcessor @Inject constructor() : ILinkProcessor {
 
     override fun processLink(originalLink: String?): ResultData<ProcessedLinkData, LinkProcessorError> {
         if(originalLink == null) {
-            return ResultData.Error(LinkProcessorError.INVALID_LINK)
+            return ResultData.Error(LinkProcessorError.NO_LINK)
         }
 
         try {
@@ -23,10 +23,6 @@ class LinkProcessor @Inject constructor() : ILinkProcessor {
                 .replace("http://", "", ignoreCase = true)
                 .replace("www.", "", ignoreCase = true)
                 .replace(".com", "", ignoreCase = true)
-
-            if (filteredHostName.isEmpty()) {
-                return ResultData.Error(LinkProcessorError.INVALID_HOST)
-            }
 
             val currentTimeStamp = System.currentTimeMillis()
 
