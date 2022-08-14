@@ -18,4 +18,5 @@ interface LinkDao {
 
     @Query("SELECT groupName FROM links_table ORDER BY storingTimeStamp DESC LIMIT :count")
     suspend fun getRecentXNumberOfGroupName(count: Int): List<String>
+
 }

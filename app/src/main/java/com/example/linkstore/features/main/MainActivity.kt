@@ -9,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
@@ -21,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.linkstore.features.home.ui.HomeScreen
 import com.example.linkstore.features.linkprocessor.ProcessedLinkData
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToHomeScreenSideEffect
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToSaveLinkScreenSideEffect
@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(navController = navController, startDestination = "homeScreen") {
                         composable(route = "homeScreen") {
-                            Text(text = "HomeScreen")
+                            HomeScreen()
                         }
                         composable(
                             route = "saveLinkScreen/{processedLink}",
