@@ -1,6 +1,7 @@
 package com.example.linkstore.features.main
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,13 +16,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.linkstore.common.utils.safeNavigateIfRequired
+import androidx.navigation.navArgument
+import com.example.linkstore.features.linkprocessor.ProcessedLinkData
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToHomeScreenSideEffect
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToSaveLinkScreenSideEffect
+import com.example.linkstore.features.savelink.ui.SaveLinkScreen
 import com.example.linkstore.ui.theme.LinkStoreTheme
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
@@ -55,8 +60,21 @@ class MainActivity : ComponentActivity() {
                         composable(route = "homeScreen") {
                             Text(text = "HomeScreen")
                         }
-                        composable(route = "saveLinkScreen") {
-                            Text(text = "saveLinkScreen")
+                        composable(
+                            route = "saveLinkScreen/{processedLink}",
+                            arguments = listOf(navArgument("processedLink") { type = NavType.StringType })
+                        ) {
+                            val processedLinkJson = it.arguments?.getString("processedLink") ?: return@composable
+                            val processedLink = Gson().fromJson(processedLinkJson, ProcessedLinkData::class.java)
+                            SaveLinkScreen(
+                                processedLinkData = processedLink,
+                                navigateToHomeScreen = {
+                                    navController.navigateUp()
+                                },
+                                closeApp = {
+                                    finishAndRemoveTask()
+                                }
+                            )
                         }
                     }
                 }
@@ -74,17 +92,14 @@ class MainActivity : ComponentActivity() {
                     .collect {
                         when(it) {
                             is NavigateToHomeScreenSideEffect -> {
-                                navController.safeNavigateIfRequired(
-                                    routeToNavigate = "homeScreen"
-                                ) {
-                                    navigate("homeScreen")
+                                navController.navigate("homeScreen") {
+                                    launchSingleTop = true
                                 }
                             }
                             is NavigateToSaveLinkScreenSideEffect -> {
-                                navController.safeNavigateIfRequired(
-                                    routeToNavigate = "saveLinkScreen"
-                                ) {
-                                    navigate("saveLinkScreen")
+                                val json = Uri.encode(Gson().toJson(it.processedLinkData))
+                                navController.navigate("saveLinkScreen/$json") {
+                                    launchSingleTop = true
                                 }
                             }
                         }

@@ -4,19 +4,18 @@ import com.example.linkstore.features.savelink.data.local.datasource.ISaveLinkLo
 import com.example.linkstore.features.savelink.data.local.datasource.SaveLinkLocalDataSource
 import com.example.linkstore.features.savelink.data.repository.ISaveLinkRepository
 import com.example.linkstore.features.savelink.data.repository.SaveLinkRepository
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
 
-@InstallIn(ActivityComponent::class)
+@InstallIn(ViewModelComponent::class)
 @Module
-object SaveLinkModule {
+abstract class SaveLinkModule {
 
-    @Provides
-    fun provideLocalDataSource(impl: SaveLinkLocalDataSource): ISaveLinkLocalDataSource = impl
+    @Binds
+    abstract fun provideLocalDataSource(impl: SaveLinkLocalDataSource): ISaveLinkLocalDataSource
 
-    @Provides
-    fun provideRepository(impl: SaveLinkRepository): ISaveLinkRepository = impl
-
+    @Binds
+    abstract fun provideRepository(impl: SaveLinkRepository): ISaveLinkRepository
 }

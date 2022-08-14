@@ -1,8 +1,10 @@
 package com.example.linkstore.features.savelink.domain
 
 import com.example.linkstore.features.savelink.data.repository.ISaveLinkRepository
+import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
+@ViewModelScoped
 class GetRecentGroupNameSuggestionsUseCase @Inject constructor(
     private val saveLinkRepository: ISaveLinkRepository
 ) {
