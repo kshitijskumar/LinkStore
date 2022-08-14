@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.linkstore.application.db.AppDb.Companion.APP_DB_VERSION
 import com.example.linkstore.features.savelink.data.local.dao.LinkDao
-import com.example.linkstore.features.savelink.data.local.models.entities.LinkEntity
+import com.example.linkstore.features.savelink.data.models.entities.LinkEntity
 
 @Database(entities = [LinkEntity::class], version = APP_DB_VERSION, exportSchema = true)
 abstract class AppDb : RoomDatabase() {

@@ -1,4 +1,4 @@
-package com.example.linkstore.features.savelink.data.local.models.entities
+package com.example.linkstore.features.savelink.data.models.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
