@@ -7,4 +7,7 @@ interface IHomeLocalDataSource {
 
     fun getAllLinks(): Flow<List<LinkEntity>>
 
+    fun getAllLinksForGroupNameAsFlow(groupName: String): Flow<List<LinkEntity>>
+    suspend fun deleteLink(link: String)
+
 }

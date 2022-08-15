@@ -18,4 +18,17 @@ class HomeRepository @Inject constructor(
             list.map { it.toLinkAppModel() }
         }
     }
+
+    override fun getAllLinksForGroupNameAsFlow(groupName: String): Flow<List<LinkAppModel>> {
+        return localDataSource.getAllLinksForGroupNameAsFlow(groupName = groupName)
+            .map { list ->
+                list.map {
+                    it.toLinkAppModel()
+                }
+            }
+    }
+
+    override suspend fun deleteLink(link: String) {
+        localDataSource.deleteLink(link)
+    }
 }

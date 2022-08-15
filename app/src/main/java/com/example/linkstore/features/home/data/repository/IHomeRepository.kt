@@ -7,4 +7,8 @@ interface IHomeRepository {
 
     fun getAllLinks(): Flow<List<LinkAppModel>>
 
+    fun getAllLinksForGroupNameAsFlow(groupName: String): Flow<List<LinkAppModel>>
+
+    suspend fun deleteLink(link: String)
+
 }

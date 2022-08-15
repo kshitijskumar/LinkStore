@@ -14,4 +14,12 @@ class HomeLocalDataSource @Inject constructor(
     override fun getAllLinks(): Flow<List<LinkEntity>> {
         return linkDao.getAllLinksAsFlow()
     }
+
+    override fun getAllLinksForGroupNameAsFlow(groupName: String): Flow<List<LinkEntity>> {
+        return linkDao.getAllLinksForGroupNameAsFlow(groupName = groupName)
+    }
+
+    override suspend fun deleteLink(link: String) {
+        linkDao.deleteLink(link)
+    }
 }

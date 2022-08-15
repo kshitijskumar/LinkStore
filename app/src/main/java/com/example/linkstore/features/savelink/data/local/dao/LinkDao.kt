@@ -19,4 +19,10 @@ interface LinkDao {
     @Query("SELECT groupName FROM links_table ORDER BY storingTimeStamp DESC LIMIT :count")
     suspend fun getRecentXNumberOfGroupName(count: Int): List<String>
 
+    @Query("SELECT * FROM links_table WHERE groupName = :groupName ORDER BY storingTimeStamp DESC")
+    fun getAllLinksForGroupNameAsFlow(groupName: String): Flow<List<LinkEntity>>
+
+    @Query("DELETE FROM links_table WHERE originalLink = :link")
+    suspend fun deleteLink(link: String)
+
 }
