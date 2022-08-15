@@ -23,9 +23,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.linkstore.features.alllinksofgroup.ui.AllLinksOfGroupScreen
 import com.example.linkstore.features.home.ui.HomeScreen
-import com.example.linkstore.features.linkprocessor.ProcessedLinkData
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToHomeScreenSideEffect
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToSaveLinkScreenSideEffect
+import com.example.linkstore.features.savelink.data.models.appmodel.SaveScreenInitialData
+import com.example.linkstore.features.savelink.data.toSaveScreenFreshData
 import com.example.linkstore.features.savelink.ui.SaveLinkScreen
 import com.example.linkstore.ui.theme.LinkStoreTheme
 import com.google.gson.Gson
@@ -75,10 +76,10 @@ class MainActivity : ComponentActivity() {
                             route = "saveLinkScreen/{processedLink}",
                             arguments = listOf(navArgument("processedLink") { type = NavType.StringType })
                         ) {
-                            val processedLinkJson = it.arguments?.getString("processedLink") ?: return@composable
-                            val processedLink = Gson().fromJson(processedLinkJson, ProcessedLinkData::class.java)
+                            val freshDataString = it.arguments?.getString("processedLink") ?: return@composable
+                            val freshData = Gson().fromJson(freshDataString, SaveScreenInitialData.FreshData::class.java)
                             SaveLinkScreen(
-                                processedLinkData = processedLink,
+                                initialData = freshData,
                                 navigateToHomeScreen = {
                                     navController.navigateUp()
                                 },
@@ -129,7 +130,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             is NavigateToSaveLinkScreenSideEffect -> {
-                                val json = Uri.encode(Gson().toJson(it.processedLinkData))
+                                val json = Uri.encode(Gson().toJson(it.processedLinkData.toSaveScreenFreshData()))
                                 navController.navigate("saveLinkScreen/$json") {
                                     launchSingleTop = true
                                 }

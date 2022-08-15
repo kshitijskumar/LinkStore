@@ -8,6 +8,8 @@ import com.example.linkstore.features.savelink.SaveLinkIntent
 import com.example.linkstore.features.savelink.SaveLinkPartialChange
 import com.example.linkstore.features.savelink.SaveLinkSideEffect
 import com.example.linkstore.features.savelink.SaveLinkState
+import com.example.linkstore.features.savelink.data.models.SaveScreenFlow
+import com.example.linkstore.features.savelink.data.toSaveScreenFlow
 import com.example.linkstore.features.savelink.domain.FetchLinkPreviewDataUseCase
 import com.example.linkstore.features.savelink.domain.GetRecentGroupNameSuggestionsUseCase
 import com.example.linkstore.features.savelink.domain.SaveLinkUseCase
@@ -87,9 +89,11 @@ class SaveLinkViewModel @Inject constructor(
     ): Flow<SaveLinkPartialChange.InitializationChange> {
         return flow.map {
             val recentGroupNamed = getRecentGroupNameSuggestionsUseCase.invoke()
-            startLinkPreviewFetchJob(it.processedLinkData.originalLink)
+            if (it.initialData.toSaveScreenFlow() == SaveScreenFlow.FRESH_LINK) {
+                startLinkPreviewFetchJob(it.initialData.originalLink)
+            }
             SaveLinkPartialChange.InitializationChange(
-                data = it.processedLinkData,
+                data = it.initialData,
                 recentGroupNames = recentGroupNamed
             )
         }

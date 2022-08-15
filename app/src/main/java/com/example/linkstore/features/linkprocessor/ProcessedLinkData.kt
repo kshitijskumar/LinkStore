@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ProcessedLinkData(
     val originalLink: String,
-    val groupNow: String,
+    val groupName: String,
     val timeStamp: Long
 ) : Parcelable
 

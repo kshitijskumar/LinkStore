@@ -31,7 +31,7 @@ class LinkProcessor @Inject constructor() : ILinkProcessor {
             return ResultData.Success(
                 data = ProcessedLinkData(
                     originalLink = originalLink,
-                    groupNow = filteredHostName,
+                    groupName = filteredHostName,
                     timeStamp = currentTimeStamp
                 )
             )

@@ -20,16 +20,16 @@ import com.example.linkstore.R
 import com.example.linkstore.common.component.ImageWithTitleAbove
 import com.example.linkstore.common.component.TextFieldWithTitleAbove
 import com.example.linkstore.common.component.TextWithTitleAbove
-import com.example.linkstore.features.linkprocessor.ProcessedLinkData
 import com.example.linkstore.features.savelink.SaveLinkIntent
 import com.example.linkstore.features.savelink.SaveLinkSideEffect
+import com.example.linkstore.features.savelink.data.models.appmodel.SaveScreenInitialData
 import com.example.linkstore.ui.theme.SubtitleColor
 import com.example.linkstore.ui.theme.TitleColor
 import kotlinx.coroutines.launch
 
 @Composable
 fun SaveLinkScreen(
-    processedLinkData: ProcessedLinkData?,
+    initialData: SaveScreenInitialData?,
     saveLinkVm: SaveLinkViewModel = hiltViewModel(),
     navigateToHomeScreen: () -> Unit,
     closeApp: () -> Unit
@@ -39,8 +39,8 @@ fun SaveLinkScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
-        processedLinkData?.let {
-            saveLinkVm.processIntent(SaveLinkIntent.InitializationIntent(processedLinkData))
+        initialData?.let {
+            saveLinkVm.processIntent(SaveLinkIntent.InitializationIntent(initialData))
         }
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             saveLinkVm.sideEffect
@@ -148,7 +148,7 @@ fun SaveLinkScreen(
 @Composable
 fun SaveLinkScreenPreview() {
     SaveLinkScreen(
-        processedLinkData = ProcessedLinkData("dfs", "Sdf", 123),
+        initialData = SaveScreenInitialData.FreshData("dfs", "Sdf", 123),
         navigateToHomeScreen = {},
         closeApp = {}
     )

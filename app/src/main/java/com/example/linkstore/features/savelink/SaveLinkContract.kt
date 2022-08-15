@@ -1,6 +1,8 @@
 package com.example.linkstore.features.savelink
 
-import com.example.linkstore.features.linkprocessor.ProcessedLinkData
+import com.example.linkstore.features.savelink.data.models.SaveScreenFlow
+import com.example.linkstore.features.savelink.data.models.appmodel.SaveScreenInitialData
+import com.example.linkstore.features.savelink.data.toSaveScreenFlow
 import com.example.linkstore.mvi.BasePartialChange
 
 
@@ -12,11 +14,11 @@ data class SaveLinkState(
     val thumbnailUrl: String = "",
     val recentGroupNameSuggestions: List<String> = listOf(),
     val isSaveButtonsEnabled: Boolean = false,
-    val isGroupNameIncorrect: Boolean = false
+    val saveScreenFlow: SaveScreenFlow = SaveScreenFlow.FRESH_LINK
 )
 
 sealed class SaveLinkIntent {
-    data class InitializationIntent(val processedLinkData: ProcessedLinkData) : SaveLinkIntent()
+    data class InitializationIntent(val initialData: SaveScreenInitialData) : SaveLinkIntent()
     data class OnGroupNameUpdate(val newGroupName: String) : SaveLinkIntent()
     data class OnExtraNoteUpdate(val newExtraNote: String) : SaveLinkIntent()
     data class OnGroupNameSuggestionClicked(val clickedGroupName: String) : SaveLinkIntent()
@@ -33,19 +35,27 @@ sealed class SaveLinkSideEffect {
 sealed class SaveLinkPartialChange : BasePartialChange<SaveLinkState> {
 
     data class InitializationChange(
-        val data: ProcessedLinkData,
+        val data: SaveScreenInitialData,
         val recentGroupNames: List<String>
     ): SaveLinkPartialChange() {
         override fun reduce(oldState: SaveLinkState): SaveLinkState {
+            val extraNote = when(data) {
+                is SaveScreenInitialData.ExistingData -> data.extraNote
+                is SaveScreenInitialData.FreshData -> "" // no note when link is freshly processed
+            }
+            val thumbnailUrl = when(data) {
+                is SaveScreenInitialData.ExistingData -> data.thumbnailUrl
+                is SaveScreenInitialData.FreshData -> "" // no thumbnailUrl when link is freshly processed
+            }
             return oldState.copy(
                 originalLink = data.originalLink,
-                groupName = data.groupNow,
+                groupName = data.groupName,
                 timestamp = data.timeStamp,
-                extraNote = "",
-                thumbnailUrl = "",
+                extraNote = extraNote,
+                thumbnailUrl = thumbnailUrl,
                 recentGroupNameSuggestions = recentGroupNames,
                 isSaveButtonsEnabled = true,
-                isGroupNameIncorrect = false
+                saveScreenFlow = data.toSaveScreenFlow()
             )
         }
     }
@@ -58,14 +68,12 @@ sealed class SaveLinkPartialChange : BasePartialChange<SaveLinkState> {
                     oldState.copy(
                         groupName = invalidGroupName,
                         isSaveButtonsEnabled = false,
-                        isGroupNameIncorrect = true
                     )
                 }
                 is ValidGroupName -> {
                     oldState.copy(
                         groupName = newGroupName,
-                        isSaveButtonsEnabled = true,
-                        isGroupNameIncorrect = false
+                        isSaveButtonsEnabled = true
                     )
                 }
             }
