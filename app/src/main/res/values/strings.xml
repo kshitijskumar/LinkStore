@@ -12,4 +12,5 @@
     <string name="no_group_error_title">Sorry no groups found!</string>
     <string name="np_group_error_subtitle">Groups are created when a link is saved in the app, you will be able to see all the distinct groups for better categorization</string>
     <string name="x_number_of_links">Links count: %1$d</string>
+    <string name="preview_thumbnail">Preview thumbnail</string>
 </resources>

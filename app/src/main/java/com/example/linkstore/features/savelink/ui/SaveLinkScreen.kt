@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.linkstore.R
+import com.example.linkstore.common.component.ImageWithTitleAbove
 import com.example.linkstore.common.component.TextFieldWithTitleAbove
 import com.example.linkstore.common.component.TextWithTitleAbove
 import com.example.linkstore.features.linkprocessor.ProcessedLinkData
@@ -111,6 +112,13 @@ fun SaveLinkScreen(
                         )
                     )
                 }
+            }
+            if (state.value.thumbnailUrl.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(14.dp))
+                ImageWithTitleAbove(
+                    imageUrl = state.value.thumbnailUrl,
+                    title = stringResource(id = R.string.preview_thumbnail)
+                )
             }
         }
 

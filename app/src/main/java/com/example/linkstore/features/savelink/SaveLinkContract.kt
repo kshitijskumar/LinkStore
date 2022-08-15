@@ -9,6 +9,7 @@ data class SaveLinkState(
     val groupName: String = "",
     val timestamp: Long = -1,
     val extraNote: String? = null,
+    val thumbnailUrl: String = "",
     val recentGroupNameSuggestions: List<String> = listOf(),
     val isSaveButtonsEnabled: Boolean = false,
     val isGroupNameIncorrect: Boolean = false
@@ -21,6 +22,7 @@ sealed class SaveLinkIntent {
     data class OnGroupNameSuggestionClicked(val clickedGroupName: String) : SaveLinkIntent()
     object SaveAndGotoHomeClicked : SaveLinkIntent()
     object SaveAndExitClicked : SaveLinkIntent()
+    data class UpdateExtraNoteIfNecessaryAndThumbnail(val extraNote: String, val thumbnailUrl: String): SaveLinkIntent()
 }
 
 sealed class SaveLinkSideEffect {
@@ -40,6 +42,7 @@ sealed class SaveLinkPartialChange : BasePartialChange<SaveLinkState> {
                 groupName = data.groupNow,
                 timestamp = data.timeStamp,
                 extraNote = "",
+                thumbnailUrl = "",
                 recentGroupNameSuggestions = recentGroupNames,
                 isSaveButtonsEnabled = true,
                 isGroupNameIncorrect = false
@@ -87,5 +90,19 @@ sealed class SaveLinkPartialChange : BasePartialChange<SaveLinkState> {
     object SaveAndGotoHomeScreenChange : SaveLinkPartialChange()
 
     object SaveAndExitAppChange : SaveLinkPartialChange()
+
+    data class UpdateExtraNoteAndThumbnailChange(val extraNoteFetched: String, val thumbnailUrl: String) : SaveLinkPartialChange() {
+        override fun reduce(oldState: SaveLinkState): SaveLinkState {
+            val extraNoteToUpdate = if (oldState.extraNote.isNullOrEmpty()) {
+                extraNoteFetched
+            } else {
+                oldState.extraNote
+            }
+            return oldState.copy(
+                extraNote = extraNoteToUpdate,
+                thumbnailUrl = thumbnailUrl
+            )
+        }
+    }
 
 }

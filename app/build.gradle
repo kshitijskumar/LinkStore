@@ -89,6 +89,12 @@ dependencies {
 
     //gson
     implementation "com.google.code.gson:gson:$gson_version"
+
+    // open graph parser
+    implementation "com.github.Priyansh-Kedia:OpenGraphParser:$open_graph_parser"
+
+    // accompanist coil
+    implementation "io.coil-kt:coil-compose:$coil_version"
 }
 
 kapt {
