@@ -13,4 +13,8 @@
     <string name="np_group_error_subtitle">Groups are created when a link is saved in the app, you will be able to see all the distinct groups for better categorization</string>
     <string name="x_number_of_links">Links count: %1$d</string>
     <string name="preview_thumbnail">Preview thumbnail</string>
+    <string name="delete_confirmation_title">Delete link information?</string>
+    <string name="delete_confirmation_text">Are you sure you want to delete the following link from the app permanently?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

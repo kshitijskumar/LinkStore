@@ -29,12 +29,8 @@ class GroupLinksViewModel @Inject constructor(
 
     override fun getSideEffects(change: GroupLinksPartialChange): List<GroupLinksSideEffect> {
         val sideEffect: GroupLinksSideEffect? = when(change) {
-            is GroupLinksPartialChange.InitializationChange -> null
             is GroupLinksPartialChange.OnDeleteClickedChange -> {
                 GroupLinksSideEffect.ShowDeleteConfirmationDialog(change.linkAppModel)
-            }
-            is GroupLinksPartialChange.OnDeleteConfirmedClickedChange -> {
-                GroupLinksSideEffect.NavigateBack
             }
             is GroupLinksPartialChange.OnEditClickedChange -> {
                 GroupLinksSideEffect.NavigateToEditLinkFlow(change.linkAppModel)
@@ -42,6 +38,13 @@ class GroupLinksViewModel @Inject constructor(
             is GroupLinksPartialChange.OnLinkClickedChange -> {
                 GroupLinksSideEffect.OpenClickedLink(change.link)
             }
+            is GroupLinksPartialChange.InitializationChange.LinksForTheGroup -> {
+                null
+            }
+            is GroupLinksPartialChange.InitializationChange.NoLinksForTheGroup -> {
+                GroupLinksSideEffect.NavigateBack
+            }
+            is GroupLinksPartialChange.OnDeleteConfirmedClickedChange -> null
         }
 
         return mutableListOf<GroupLinksSideEffect>().apply {
@@ -51,14 +54,19 @@ class GroupLinksViewModel @Inject constructor(
 
     private fun handleInitializationIntent(
         flow: Flow<GroupLinksIntent.Initialization>
-    ): Flow<GroupLinksPartialChange.InitializationChange> {
+    ): Flow<GroupLinksPartialChange> {
         return flow.flatMapLatest { intent ->
             getAllLinksForGroupNameUseCase.invoke(intent.groupName)
                 .map { list ->
-                    GroupLinksPartialChange.InitializationChange(
-                        groupName = intent.groupName,
-                        linksList = list
-                    )
+                    if (list.isEmpty()) {
+                        GroupLinksPartialChange.InitializationChange.NoLinksForTheGroup
+                    } else {
+                        GroupLinksPartialChange.InitializationChange.LinksForTheGroup(
+                            groupName = intent.groupName,
+                            linksList = list
+                        )
+                    }
+
                 }
         }
     }

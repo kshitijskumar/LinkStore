@@ -25,13 +25,23 @@ sealed class GroupLinksSideEffect {
 
 sealed class GroupLinksPartialChange : BasePartialChange<GroupLinksState> {
 
-    data class InitializationChange(val groupName: String, val linksList: List<LinkAppModel>) : GroupLinksPartialChange() {
+    sealed class InitializationChange : GroupLinksPartialChange() {
         override fun reduce(oldState: GroupLinksState): GroupLinksState {
-            return oldState.copy(
-                groupName = groupName,
-                linksList = linksList
-            )
+            return when(this) {
+                is LinksForTheGroup -> {
+                    oldState.copy(
+                        groupName = groupName,
+                        linksList = linksList
+                    )
+                }
+                is NoLinksForTheGroup -> {
+                    oldState
+                }
+            }
         }
+
+        object NoLinksForTheGroup : InitializationChange()
+        data class LinksForTheGroup(val groupName: String, val linksList: List<LinkAppModel>) : InitializationChange()
     }
 
     data class OnLinkClickedChange(val link: String): GroupLinksPartialChange()

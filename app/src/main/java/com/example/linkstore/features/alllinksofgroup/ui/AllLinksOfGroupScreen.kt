@@ -1,24 +1,28 @@
 package com.example.linkstore.features.alllinksofgroup.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.linkstore.R
 import com.example.linkstore.common.component.LinkDetailsListComponent
 import com.example.linkstore.features.savelink.data.models.appmodel.LinkAppModel
+import com.example.linkstore.ui.theme.SubtitleColor
 import com.example.linkstore.ui.theme.TitleColor
 import kotlinx.coroutines.launch
 
@@ -33,6 +37,11 @@ fun AllLinksOfGroupScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
+
+    val state = groupVm.state.collectAsState()
+    val linkUnderDeleteConsideration = remember {
+        mutableStateOf<LinkAppModel?>(null)
+    }
 
     LaunchedEffect(key1 = Unit) {
         groupVm.processIntent(
@@ -53,14 +62,12 @@ fun AllLinksOfGroupScreen(
                             uriHandler.openUri(it.link)
                         }
                         is GroupLinksSideEffect.ShowDeleteConfirmationDialog -> {
-
+                            linkUnderDeleteConsideration.value = it.linksAppModel
                         }
                     }
                 }
         }
     }
-
-    val state = groupVm.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -108,6 +115,69 @@ fun AllLinksOfGroupScreen(
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
+    }
+
+    if (linkUnderDeleteConsideration.value != null) {
+        AlertDialog(
+            onDismissRequest = {
+                linkUnderDeleteConsideration.value = null
+            },
+            properties = DialogProperties(),
+            title = {
+                Text(
+                    text = stringResource(id = R.string.delete_confirmation_title),
+                    color = Color.Black,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 18.sp
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(id = R.string.delete_confirmation_text),
+                    color = SubtitleColor,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                )
+            },
+            buttons = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    // yes button
+                    Text(
+                        text = stringResource(id = R.string.yes),
+                        modifier = Modifier
+                            .clickable {
+                                scope.launch {
+                                    linkUnderDeleteConsideration.value?.let {
+                                        groupVm.processIntent(
+                                            GroupLinksIntent.OnDeleteConfirmedClicked(
+                                                it
+                                            )
+                                        )
+                                    }
+                                    linkUnderDeleteConsideration.value = null
+                                }
+                            }
+                            .padding(4.dp)
+                    )
+                    Spacer(modifier = Modifier.width(18.dp))
+                    // no button
+                    Text(
+                        text = stringResource(id = R.string.no),
+                        modifier = Modifier
+                            .clickable {
+                                linkUnderDeleteConsideration.value = null
+                            }
+                            .padding(4.dp)
+                    )
+                    Spacer(modifier = Modifier.width(18.dp))
+                }
+            }
+        )
     }
 
 }
