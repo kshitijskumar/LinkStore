@@ -20,7 +20,8 @@ class MainActivityNavigationViewModel @Inject constructor(
 
     override fun Flow<MainActivityNavigationIntent>.toPartialChange(): Flow<MainActivityNavigationPartialChange> {
         return merge(
-            handleTryNavigateToSaveLinkOrHomeScreenIntent(filterIsInstance())
+            handleTryNavigateToSaveLinkOrHomeScreenIntent(filterIsInstance()),
+            handleNavigateToAllLinksOfGroupIntent(filterIsInstance())
         )
     }
 
@@ -31,6 +32,9 @@ class MainActivityNavigationViewModel @Inject constructor(
             }
             is SaveLinkFlow -> {
                 MainActivityNavigationSideEffect.NavigateToSaveLinkScreenSideEffect(change.processedLinkData)
+            }
+            is MainActivityNavigationPartialChange.AllLinksOfGroupPartialChange -> {
+                MainActivityNavigationSideEffect.NavigateToAllLinksOfGroupSideEffect(change.groupName)
             }
         }
 
@@ -47,6 +51,14 @@ class MainActivityNavigationViewModel @Inject constructor(
                 is ResultData.Error -> HomeScreenFlow
                 is ResultData.Success -> SaveLinkFlow(result.data)
             }
+        }
+    }
+
+    private fun handleNavigateToAllLinksOfGroupIntent(
+        flow: Flow<MainActivityNavigationIntent.NavigateToAllLinksOfGroupIntent>
+    ): Flow<MainActivityNavigationPartialChange.AllLinksOfGroupPartialChange> {
+        return flow.map {
+            MainActivityNavigationPartialChange.AllLinksOfGroupPartialChange(it.groupName)
         }
     }
 

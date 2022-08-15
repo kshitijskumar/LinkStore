@@ -8,11 +8,13 @@ class MainActivityState
 sealed class MainActivityNavigationIntent {
     data class TryNavigateToSaveLinkOrHomeScreenIntent(val originalLink: String?) : MainActivityNavigationIntent()
     data class NavigateToSaveLinkIntent(val originalLink: String?) : MainActivityNavigationIntent()
+    data class NavigateToAllLinksOfGroupIntent(val groupName: String): MainActivityNavigationIntent()
 }
 
 sealed class MainActivityNavigationSideEffect {
     data class NavigateToSaveLinkScreenSideEffect(val processedLinkData: ProcessedLinkData) : MainActivityNavigationSideEffect()
     object NavigateToHomeScreenSideEffect : MainActivityNavigationSideEffect()
+    data class NavigateToAllLinksOfGroupSideEffect(val groupName: String): MainActivityNavigationSideEffect()
 }
 
 sealed class MainActivityNavigationPartialChange : BasePartialChange<MainActivityState> {
@@ -28,4 +30,6 @@ sealed class MainActivityNavigationPartialChange : BasePartialChange<MainActivit
         data class SaveLinkFlow(val processedLinkData: ProcessedLinkData) : SaveLinkOrHomeScreenPartialChange()
         object HomeScreenFlow : SaveLinkOrHomeScreenPartialChange()
     }
+
+    data class AllLinksOfGroupPartialChange(val groupName: String) : MainActivityNavigationPartialChange()
 }

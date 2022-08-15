@@ -33,7 +33,8 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @Composable
 fun HomeScreen(
-    homeVm: HomeViewModel = hiltViewModel()
+    homeVm: HomeViewModel = hiltViewModel(),
+    navigateToGroupLinks: (String) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
@@ -45,7 +46,7 @@ fun HomeScreen(
                 .collect {
                     when (it) {
                         is HomeSideEffect.NavigateToLinksListScreen -> {
-
+                            navigateToGroupLinks.invoke(it.groupName)
                         }
                     }
                 }
@@ -129,5 +130,7 @@ fun HomeScreen(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen() {
+
+    }
 }

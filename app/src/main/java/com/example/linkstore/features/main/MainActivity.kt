@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.linkstore.features.alllinksofgroup.ui.AllLinksOfGroupScreen
 import com.example.linkstore.features.home.ui.HomeScreen
 import com.example.linkstore.features.linkprocessor.ProcessedLinkData
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToHomeScreenSideEffect
@@ -51,6 +53,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     val navController = rememberNavController()
+                    val scope = rememberCoroutineScope()
 
                     LaunchedEffect(key1 = navController) {
                         handleSideEffects(navController = navController)
@@ -58,7 +61,15 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(navController = navController, startDestination = "homeScreen") {
                         composable(route = "homeScreen") {
-                            HomeScreen()
+                            HomeScreen(
+                                navigateToGroupLinks = {
+                                    scope.launch {
+                                        mainActivityVm.processIntent(
+                                            MainActivityNavigationIntent.NavigateToAllLinksOfGroupIntent(it)
+                                        )
+                                    }
+                                }
+                            )
                         }
                         composable(
                             route = "saveLinkScreen/{processedLink}",
@@ -74,6 +85,15 @@ class MainActivity : ComponentActivity() {
                                 closeApp = {
                                     finishAndRemoveTask()
                                 }
+                            )
+                        }
+                        composable(
+                            route = "allLinksOfGroup/{groupName}",
+                            arguments = listOf(navArgument("groupName") { type = NavType.StringType })
+                        ) {
+                            val groupName = it.arguments?.getString("groupName") ?: return@composable
+                            AllLinksOfGroupScreen(
+                                groupName = groupName
                             )
                         }
                     }
@@ -99,6 +119,11 @@ class MainActivity : ComponentActivity() {
                             is NavigateToSaveLinkScreenSideEffect -> {
                                 val json = Uri.encode(Gson().toJson(it.processedLinkData))
                                 navController.navigate("saveLinkScreen/$json") {
+                                    launchSingleTop = true
+                                }
+                            }
+                            is MainActivityNavigationSideEffect.NavigateToAllLinksOfGroupSideEffect -> {
+                                navController.navigate("allLinksOfGroup/${it.groupName}") {
                                     launchSingleTop = true
                                 }
                             }
