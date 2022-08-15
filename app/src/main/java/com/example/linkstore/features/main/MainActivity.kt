@@ -98,7 +98,13 @@ class MainActivity : ComponentActivity() {
                                     navController.navigateUp()
                                 },
                                 navigateToEditFlow = {
-                                    // TODO: work on navigate flow
+                                    scope.launch {
+                                        mainActivityVm.processIntent(
+                                            MainActivityNavigationIntent.EditExistingLinkIntent(
+                                                linkAppModel = it
+                                            )
+                                        )
+                                    }
                                 }
                             )
                         }
@@ -132,6 +138,9 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("allLinksOfGroup/${it.groupName}") {
                                     launchSingleTop = true
                                 }
+                            }
+                            is MainActivityNavigationSideEffect.NavigateToEditLinkFLow -> {
+                                // TODO: add edit flow
                             }
                         }
                     }

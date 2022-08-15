@@ -2,7 +2,8 @@ package com.example.linkstore.features.main
 
 import com.example.linkstore.common.utils.ResultData
 import com.example.linkstore.features.linkprocessor.LinkProcessor
-import com.example.linkstore.features.main.MainActivityNavigationPartialChange.SaveLinkOrHomeScreenPartialChange.*
+import com.example.linkstore.features.main.MainActivityNavigationPartialChange.SaveLinkOrHomeScreenPartialChange.HomeScreenFlow
+import com.example.linkstore.features.main.MainActivityNavigationPartialChange.SaveLinkOrHomeScreenPartialChange.SaveLinkFlow
 import com.example.linkstore.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,8 @@ class MainActivityNavigationViewModel @Inject constructor(
     override fun Flow<MainActivityNavigationIntent>.toPartialChange(): Flow<MainActivityNavigationPartialChange> {
         return merge(
             handleTryNavigateToSaveLinkOrHomeScreenIntent(filterIsInstance()),
-            handleNavigateToAllLinksOfGroupIntent(filterIsInstance())
+            handleNavigateToAllLinksOfGroupIntent(filterIsInstance()),
+            handleEditExistingLinkIntent(filterIsInstance())
         )
     }
 
@@ -35,6 +37,9 @@ class MainActivityNavigationViewModel @Inject constructor(
             }
             is MainActivityNavigationPartialChange.AllLinksOfGroupPartialChange -> {
                 MainActivityNavigationSideEffect.NavigateToAllLinksOfGroupSideEffect(change.groupName)
+            }
+            is MainActivityNavigationPartialChange.EditLinkPartialChange -> {
+                MainActivityNavigationSideEffect.NavigateToEditLinkFLow(change.linkAppModel)
             }
         }
 
@@ -59,6 +64,14 @@ class MainActivityNavigationViewModel @Inject constructor(
     ): Flow<MainActivityNavigationPartialChange.AllLinksOfGroupPartialChange> {
         return flow.map {
             MainActivityNavigationPartialChange.AllLinksOfGroupPartialChange(it.groupName)
+        }
+    }
+
+    private fun handleEditExistingLinkIntent(
+        flow: Flow<MainActivityNavigationIntent.EditExistingLinkIntent>
+    ): Flow<MainActivityNavigationPartialChange.EditLinkPartialChange> {
+        return flow.map {
+            MainActivityNavigationPartialChange.EditLinkPartialChange(it.linkAppModel)
         }
     }
 
