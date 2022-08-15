@@ -26,6 +26,7 @@ import com.example.linkstore.features.home.ui.HomeScreen
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToHomeScreenSideEffect
 import com.example.linkstore.features.main.MainActivityNavigationSideEffect.NavigateToSaveLinkScreenSideEffect
 import com.example.linkstore.features.savelink.data.models.appmodel.SaveScreenInitialData
+import com.example.linkstore.features.savelink.data.toSaveScreenExistingData
 import com.example.linkstore.features.savelink.data.toSaveScreenFreshData
 import com.example.linkstore.features.savelink.ui.SaveLinkScreen
 import com.example.linkstore.ui.theme.LinkStoreTheme
@@ -73,13 +74,21 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(
-                            route = "saveLinkScreen/{processedLink}",
-                            arguments = listOf(navArgument("processedLink") { type = NavType.StringType })
+                            route = "saveLinkScreen/{isFreshData}/{processedLink}",
+                            arguments = listOf(
+                                navArgument("isFreshData") { type = NavType.BoolType },
+                                navArgument("processedLink") { type = NavType.StringType }
+                            )
                         ) {
-                            val freshDataString = it.arguments?.getString("processedLink") ?: return@composable
-                            val freshData = Gson().fromJson(freshDataString, SaveScreenInitialData.FreshData::class.java)
+                            val initialDataString = it.arguments?.getString("processedLink") ?: return@composable
+                            val isFreshData = it.arguments?.getBoolean("isFreshData") ?: true
+                            val initialData = if (isFreshData) {
+                                Gson().fromJson(initialDataString, SaveScreenInitialData.FreshData::class.java)
+                            } else {
+                                Gson().fromJson(initialDataString, SaveScreenInitialData.ExistingData::class.java)
+                            }
                             SaveLinkScreen(
-                                initialData = freshData,
+                                initialData = initialData,
                                 navigateToHomeScreen = {
                                     navController.navigateUp()
                                 },
@@ -131,7 +140,7 @@ class MainActivity : ComponentActivity() {
                             }
                             is NavigateToSaveLinkScreenSideEffect -> {
                                 val json = Uri.encode(Gson().toJson(it.processedLinkData.toSaveScreenFreshData()))
-                                navController.navigate("saveLinkScreen/$json") {
+                                navController.navigate("saveLinkScreen/true/$json") {
                                     launchSingleTop = true
                                 }
                             }
@@ -141,7 +150,10 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             is MainActivityNavigationSideEffect.NavigateToEditLinkFLow -> {
-                                // TODO: add edit flow
+                                val json = Uri.encode(Gson().toJson(it.linkAppModel.toSaveScreenExistingData()))
+                                navController.navigate("saveLinkScreen/false/$json") {
+                                    launchSingleTop = true
+                                }
                             }
                         }
                     }

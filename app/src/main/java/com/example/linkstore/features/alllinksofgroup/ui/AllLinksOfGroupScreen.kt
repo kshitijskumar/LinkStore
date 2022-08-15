@@ -143,7 +143,7 @@ fun AllLinksOfGroupScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 12.dp),
+                        .padding(bottom = 18.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
                     // yes button

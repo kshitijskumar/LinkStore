@@ -17,4 +17,5 @@
     <string name="delete_confirmation_text">Are you sure you want to delete the following link from the app permanently?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="edit_link">Edit Your Link</string>
 </resources>

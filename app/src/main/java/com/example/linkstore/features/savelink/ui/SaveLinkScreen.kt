@@ -22,6 +22,7 @@ import com.example.linkstore.common.component.TextFieldWithTitleAbove
 import com.example.linkstore.common.component.TextWithTitleAbove
 import com.example.linkstore.features.savelink.SaveLinkIntent
 import com.example.linkstore.features.savelink.SaveLinkSideEffect
+import com.example.linkstore.features.savelink.data.models.SaveScreenFlow
 import com.example.linkstore.features.savelink.data.models.appmodel.SaveScreenInitialData
 import com.example.linkstore.ui.theme.SubtitleColor
 import com.example.linkstore.ui.theme.TitleColor
@@ -54,6 +55,10 @@ fun SaveLinkScreen(
     }
 
     val state = saveLinkVm.state.collectAsState()
+    val screenTitleStringRes = when(state.value.saveScreenFlow) {
+        SaveScreenFlow.FRESH_LINK -> R.string.save_link
+        SaveScreenFlow.EDIT_LINK -> R.string.edit_link
+    }
 
     Column(
         modifier = Modifier
@@ -64,7 +69,7 @@ fun SaveLinkScreen(
     ) {
         Column {
             Text(
-                text = stringResource(id = R.string.save_link),
+                text = stringResource(id = screenTitleStringRes),
                 modifier = Modifier,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,

@@ -40,3 +40,13 @@ fun ProcessedLinkData.toSaveScreenFreshData(): SaveScreenInitialData.FreshData {
         timeStamp = timeStamp
     )
 }
+
+fun LinkAppModel.toSaveScreenExistingData(): SaveScreenInitialData.ExistingData {
+    return SaveScreenInitialData.ExistingData(
+        originalLink = originalLink,
+        groupName = groupName,
+        timeStamp = storingTimeStamp,
+        extraNote = extraNote,
+        thumbnailUrl = thumbnailUrl
+    )
+}
