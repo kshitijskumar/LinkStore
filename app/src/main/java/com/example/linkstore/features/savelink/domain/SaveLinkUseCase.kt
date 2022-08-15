@@ -14,13 +14,15 @@ class SaveLinkUseCase @Inject constructor(
         originalLink: String,
         groupName: String,
         storingTimeStamp: Long,
-        extraNote: String? = null
+        extraNote: String? = null,
+        thumbnailUrl: String
     ) {
         val linkAppModel = LinkAppModel(
             originalLink = originalLink,
             groupName = groupName,
             storingTimeStamp = storingTimeStamp,
-            extraNote = extraNote
+            extraNote = extraNote,
+            thumbnailUrl = thumbnailUrl
         )
         saveLinkRepository.saveLink(linkAppModel = linkAppModel)
     }

@@ -8,7 +8,8 @@ fun LinkEntity.toLinkAppModel(): LinkAppModel {
         originalLink = originalLink,
         groupName = groupName,
         storingTimeStamp = storingTimeStamp,
-        extraNote = extraNote
+        extraNote = extraNote,
+        thumbnailUrl = previewThumbnail
     )
 }
 
@@ -17,6 +18,7 @@ fun LinkAppModel.toLinkEntity(): LinkEntity {
         originalLink = originalLink,
         groupName = groupName,
         storingTimeStamp = storingTimeStamp,
-        extraNote = extraNote
+        extraNote = extraNote,
+        previewThumbnail = thumbnailUrl
     )
 }

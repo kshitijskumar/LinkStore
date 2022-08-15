@@ -4,5 +4,6 @@ data class LinkAppModel(
     val originalLink: String,
     val groupName: String,
     val storingTimeStamp: Long,
-    val extraNote: String?
+    val extraNote: String?,
+    val thumbnailUrl: String
 )

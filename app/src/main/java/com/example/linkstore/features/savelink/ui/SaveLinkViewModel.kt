@@ -159,7 +159,8 @@ class SaveLinkViewModel @Inject constructor(
                 originalLink = originalLink,
                 groupName = groupName,
                 storingTimeStamp = timestamp,
-                extraNote = extraNote
+                extraNote = extraNote,
+                thumbnailUrl = thumbnailUrl
             )
         }
     }

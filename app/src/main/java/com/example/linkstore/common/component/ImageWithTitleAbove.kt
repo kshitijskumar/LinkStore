@@ -1,5 +1,6 @@
 package com.example.linkstore.common.component
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -11,6 +12,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,7 +43,13 @@ fun ImageWithTitleAbove(
                 .crossfade(true)
                 .build(),
             contentDescription = null,
-            modifier = modifier
+            modifier = modifier,
+            contentScale = ContentScale.Fit,
+            onSuccess = {
+                Log.d("ImageStuff", "success: ${it.result}")
+            }, onError = {
+                Log.d("ImageStuff", "error: ${it.result.throwable}")
+            }
         )
     }
 }
