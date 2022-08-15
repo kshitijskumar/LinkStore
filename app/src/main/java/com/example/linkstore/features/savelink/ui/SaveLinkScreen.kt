@@ -115,6 +115,7 @@ fun SaveLinkScreen(
         }
 
         SaveButtonRow(
+            isButtonsEnabled = state.value.isSaveButtonsEnabled,
             onPositiveButtonClicked = {
                 scope.launch {
                     saveLinkVm.processIntent(

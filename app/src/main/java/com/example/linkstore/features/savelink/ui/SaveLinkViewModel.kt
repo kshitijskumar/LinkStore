@@ -1,6 +1,5 @@
 package com.example.linkstore.features.savelink.ui
 
-import android.util.Log
 import com.example.linkstore.features.savelink.SaveLinkIntent
 import com.example.linkstore.features.savelink.SaveLinkPartialChange
 import com.example.linkstore.features.savelink.SaveLinkSideEffect
@@ -10,7 +9,10 @@ import com.example.linkstore.features.savelink.domain.SaveLinkUseCase
 import com.example.linkstore.features.savelink.domain.ValidateGroupNameUseCase
 import com.example.linkstore.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,7 +45,7 @@ class SaveLinkViewModel @Inject constructor(
             is SaveLinkPartialChange.OnExtraNoteUpdate -> {
                 null
             }
-            SaveLinkPartialChange.OnGroupNameUpdateChange.InvalidGroupName -> {
+            is SaveLinkPartialChange.OnGroupNameUpdateChange.InvalidGroupName -> {
                 null
             }
             is SaveLinkPartialChange.OnGroupNameUpdateChange.ValidGroupName -> {
@@ -85,7 +87,7 @@ class SaveLinkViewModel @Inject constructor(
             if (isValidGroupName) {
                 SaveLinkPartialChange.OnGroupNameUpdateChange.ValidGroupName(it.newGroupName)
             } else {
-                SaveLinkPartialChange.OnGroupNameUpdateChange.InvalidGroupName
+                SaveLinkPartialChange.OnGroupNameUpdateChange.InvalidGroupName(it.newGroupName)
             }
         }
     }

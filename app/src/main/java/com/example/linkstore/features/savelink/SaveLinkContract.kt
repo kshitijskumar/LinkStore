@@ -53,6 +53,7 @@ sealed class SaveLinkPartialChange : BasePartialChange<SaveLinkState> {
             return when(this) {
                 is InvalidGroupName -> {
                     oldState.copy(
+                        groupName = invalidGroupName,
                         isSaveButtonsEnabled = false,
                         isGroupNameIncorrect = true
                     )
@@ -67,7 +68,7 @@ sealed class SaveLinkPartialChange : BasePartialChange<SaveLinkState> {
             }
         }
 
-        object InvalidGroupName : OnGroupNameUpdateChange()
+        data class InvalidGroupName(val invalidGroupName: String) : OnGroupNameUpdateChange()
         data class ValidGroupName(val newGroupName: String) : OnGroupNameUpdateChange()
     }
 

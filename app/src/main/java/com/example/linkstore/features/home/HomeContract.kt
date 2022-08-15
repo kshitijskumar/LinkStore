@@ -4,7 +4,8 @@ import com.example.linkstore.features.home.data.models.GroupNameAppModel
 import com.example.linkstore.mvi.BasePartialChange
 
 data class HomeState(
-    val groupNamesList: List<GroupNameAppModel> = listOf()
+    val groupNamesList: List<GroupNameAppModel> = listOf(),
+    val shouldShowErrorIfListEmpty: Boolean = false
 )
 
 sealed class HomeIntent {
@@ -21,7 +22,8 @@ sealed class HomePartialChange : BasePartialChange<HomeState> {
     data class InitializationChange(val groupNamesList: List<GroupNameAppModel>) : HomePartialChange() {
         override fun reduce(oldState: HomeState): HomeState {
             return oldState.copy(
-                groupNamesList = groupNamesList
+                groupNamesList = groupNamesList,
+                shouldShowErrorIfListEmpty = groupNamesList.isEmpty()
             )
         }
     }

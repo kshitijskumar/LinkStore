@@ -16,14 +16,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.linkstore.R
-import com.example.linkstore.features.savelink.SaveLinkIntent
 import com.example.linkstore.ui.theme.LightPurple
 import com.example.linkstore.ui.theme.Pink
-import com.example.linkstore.ui.theme.Purple200
-import kotlinx.coroutines.launch
 
 @Composable
 fun SaveButtonRow(
+    isButtonsEnabled: Boolean = true,
     onPositiveButtonClicked: () -> Unit,
     onNegativeButtonClicks: () -> Unit
 ) {
@@ -32,6 +30,7 @@ fun SaveButtonRow(
             .fillMaxWidth(),
     ) {
         Button(
+            enabled = isButtonsEnabled,
             modifier = Modifier
                 .padding(horizontal = 4.dp)
                 .weight(1f)
@@ -53,6 +52,7 @@ fun SaveButtonRow(
         }
 
         Button(
+            enabled = isButtonsEnabled,
             modifier = Modifier
                 .padding(horizontal = 4.dp)
                 .weight(1f)

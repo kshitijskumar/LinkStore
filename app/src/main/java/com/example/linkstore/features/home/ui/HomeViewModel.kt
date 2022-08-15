@@ -33,7 +33,7 @@ class HomeViewModel @Inject constructor(
             is HomePartialChange.GroupNameClickedChange -> {
                 HomeSideEffect.NavigateToLinksListScreen(change.clickedGroupName)
             }
-            is HomePartialChange.InitializationChange -> {
+            is HomePartialChange    .InitializationChange -> {
                 null
             }
         }

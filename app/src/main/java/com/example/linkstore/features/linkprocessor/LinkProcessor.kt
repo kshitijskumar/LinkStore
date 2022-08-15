@@ -2,6 +2,7 @@ package com.example.linkstore.features.linkprocessor
 
 import android.net.Uri
 import com.example.linkstore.common.utils.ResultData
+import java.util.*
 import javax.inject.Inject
 
 interface ILinkProcessor {
@@ -23,6 +24,7 @@ class LinkProcessor @Inject constructor() : ILinkProcessor {
                 .replace("http://", "", ignoreCase = true)
                 .replace("www.", "", ignoreCase = true)
                 .replace(".com", "", ignoreCase = true)
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ENGLISH) else it.toString() }
 
             val currentTimeStamp = System.currentTimeMillis()
 
