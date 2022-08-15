@@ -93,7 +93,13 @@ class MainActivity : ComponentActivity() {
                         ) {
                             val groupName = it.arguments?.getString("groupName") ?: return@composable
                             AllLinksOfGroupScreen(
-                                groupName = groupName
+                                groupName = groupName,
+                                navigateBack = {
+                                    navController.navigateUp()
+                                },
+                                navigateToEditFlow = {
+                                    // TODO: work on navigate flow
+                                }
                             )
                         }
                     }
