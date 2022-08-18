@@ -19,4 +19,6 @@
     <string name="no">No</string>
     <string name="edit_link">Edit Your Link</string>
     <string name="search_here">Search here</string>
+    <string name="no_result_for_query_error_title">No results!</string>
+    <string name="no_result_for_query_error_subtitle">Sorry no relevant links found for the given query</string>
 </resources>

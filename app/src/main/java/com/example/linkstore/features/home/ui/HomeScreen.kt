@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.linkstore.R
+import com.example.linkstore.common.component.ErrorScreenComponent
 import com.example.linkstore.common.component.GroupNameComponent
 import com.example.linkstore.features.home.HomeIntent
 import com.example.linkstore.features.home.HomeSideEffect
@@ -96,30 +97,10 @@ fun HomeScreen(
                 }
 
             } else if (state.value.shouldShowErrorIfListEmpty) {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.no_group_error_title),
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = SubtitleColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(id = R.string.np_group_error_subtitle),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = SubtitleColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(40.dp))
-                }
+                ErrorScreenComponent(
+                    errorTitle = stringResource(id = R.string.no_group_error_title),
+                    errorSubTitle = stringResource(id = R.string.np_group_error_subtitle)
+                )
             }
         }
 

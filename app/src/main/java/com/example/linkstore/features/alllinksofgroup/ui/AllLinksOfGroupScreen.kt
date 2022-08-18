@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.linkstore.R
+import com.example.linkstore.common.component.ErrorScreenComponent
 import com.example.linkstore.common.component.LinkDetailsListComponent
 import com.example.linkstore.common.component.SearchField
 import com.example.linkstore.features.savelink.data.models.appmodel.LinkAppModel
@@ -111,6 +112,13 @@ fun AllLinksOfGroupScreen(
                 CircularProgressIndicator(
                     color = Pink
                 )
+            }
+            if(state.value.shouldShowNoLinksForQuery) {
+                ErrorScreenComponent(
+                    errorTitle = stringResource(id = R.string.no_result_for_query_error_title),
+                    errorSubTitle = stringResource(id = R.string.no_result_for_query_error_subtitle)
+                )
+
             }
             LazyColumn(
                 modifier = Modifier
