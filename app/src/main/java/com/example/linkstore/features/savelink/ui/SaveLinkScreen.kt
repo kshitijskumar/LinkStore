@@ -1,6 +1,8 @@
 package com.example.linkstore.features.savelink.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,11 +62,14 @@ fun SaveLinkScreen(
         SaveScreenFlow.EDIT_LINK -> R.string.edit_link
     }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 18.dp, vertical = 14.dp)
-            .padding(top = 14.dp),
+            .padding(top = 14.dp)
+            .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {

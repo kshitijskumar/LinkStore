@@ -1,16 +1,17 @@
 package com.example.linkstore.features.alllinksofgroup.ui
 
 import com.example.linkstore.features.alllinksofgroup.domain.DeleteLinkUseCase
-import com.example.linkstore.features.alllinksofgroup.domain.GetAllLinksForGroupNameUseCase
+import com.example.linkstore.features.alllinksofgroup.domain.GetSearchQueryRelatedLinksUseCase
 import com.example.linkstore.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class GroupLinksViewModel @Inject constructor(
-    private val getAllLinksForGroupNameUseCase: GetAllLinksForGroupNameUseCase,
-    private val deleteLinkUseCase: DeleteLinkUseCase
+    private val deleteLinkUseCase: DeleteLinkUseCase,
+    private val getSearchQueryRelatedLinksUseCase: GetSearchQueryRelatedLinksUseCase
 ) : MviViewModel<GroupLinksState, GroupLinksIntent, GroupLinksPartialChange, GroupLinksSideEffect>() {
 
     override fun getInitialState(): GroupLinksState {
@@ -23,7 +24,8 @@ class GroupLinksViewModel @Inject constructor(
             handleOnLinkClickedToOpenIntent(filterIsInstance()),
             handleOnEditClickedIntent(filterIsInstance()),
             handleOnDeleteClickedIntent(filterIsInstance()),
-            handleOnDeleteConfirmedClickedIntent(filterIsInstance())
+            handleOnDeleteConfirmedClickedIntent(filterIsInstance()),
+            handleSearchQueryUpdateIntent(filterIsInstance())
         )
     }
 
@@ -38,13 +40,16 @@ class GroupLinksViewModel @Inject constructor(
             is GroupLinksPartialChange.OnLinkClickedChange -> {
                 GroupLinksSideEffect.OpenClickedLink(change.link)
             }
-            is GroupLinksPartialChange.InitializationChange.LinksForTheGroup -> {
+            is GroupLinksPartialChange.InitializationChange -> {
                 null
             }
-            is GroupLinksPartialChange.InitializationChange.NoLinksForTheGroup -> {
+            is GroupLinksPartialChange.OnDeleteConfirmedClickedChange -> null
+            is GroupLinksPartialChange.SearchQueryUpdateChange.LinksForTheGroup -> null
+            GroupLinksPartialChange.SearchQueryUpdateChange.NoLinksForTheGroup -> {
                 GroupLinksSideEffect.NavigateBack
             }
-            is GroupLinksPartialChange.OnDeleteConfirmedClickedChange -> null
+            GroupLinksPartialChange.SearchQueryUpdateChange.NoLinksForTheQuery -> null
+            is GroupLinksPartialChange.SearchQueryUpdateChange.OnQueryUpdate -> null
         }
 
         return mutableListOf<GroupLinksSideEffect>().apply {
@@ -55,19 +60,8 @@ class GroupLinksViewModel @Inject constructor(
     private fun handleInitializationIntent(
         flow: Flow<GroupLinksIntent.Initialization>
     ): Flow<GroupLinksPartialChange> {
-        return flow.flatMapLatest { intent ->
-            getAllLinksForGroupNameUseCase.invoke(intent.groupName)
-                .map { list ->
-                    if (list.isEmpty()) {
-                        GroupLinksPartialChange.InitializationChange.NoLinksForTheGroup
-                    } else {
-                        GroupLinksPartialChange.InitializationChange.LinksForTheGroup(
-                            groupName = intent.groupName,
-                            linksList = list
-                        )
-                    }
-
-                }
+        return flow.map {
+            GroupLinksPartialChange.InitializationChange(it.groupName)
         }
     }
 
@@ -101,6 +95,37 @@ class GroupLinksViewModel @Inject constructor(
         return flow.map {
             deleteLinkUseCase.invoke(it.linkAppModel.originalLink)
             GroupLinksPartialChange.OnDeleteConfirmedClickedChange
+        }
+    }
+
+    private fun handleSearchQueryUpdateIntent(
+        flow: Flow<GroupLinksIntent.OnSearchQueryUpdate>
+    ): Flow<GroupLinksPartialChange.SearchQueryUpdateChange> {
+        return flow.flatMapLatest {
+            val queryResultFlow = flow {
+                delay(200)
+                emit(it.searchQuery)
+            }.flatMapLatest {
+                getSearchQueryRelatedLinksUseCase.invoke(
+                    groupName = state.value.groupName,
+                    searchQuery = it
+                ).map { list ->
+                    if (list.isNotEmpty()) {
+                        GroupLinksPartialChange.SearchQueryUpdateChange.LinksForTheGroup(list)
+                    } else {
+                        if (it.isEmpty()) {
+                            GroupLinksPartialChange.SearchQueryUpdateChange.NoLinksForTheGroup
+                        } else {
+                            GroupLinksPartialChange.SearchQueryUpdateChange.NoLinksForTheQuery
+                        }
+                    }
+                }
+            }
+
+            merge(
+                flowOf(GroupLinksPartialChange.SearchQueryUpdateChange.OnQueryUpdate(it.searchQuery)),
+                queryResultFlow
+            )
         }
     }
 }

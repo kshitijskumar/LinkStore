@@ -1,11 +1,14 @@
 package com.example.linkstore.features.alllinksofgroup.ui
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.linkstore.R
 import com.example.linkstore.common.component.LinkDetailsListComponent
+import com.example.linkstore.common.component.SearchField
 import com.example.linkstore.features.savelink.data.models.appmodel.LinkAppModel
 import com.example.linkstore.ui.theme.SubtitleColor
 import com.example.linkstore.ui.theme.TitleColor
@@ -46,6 +50,9 @@ fun AllLinksOfGroupScreen(
     LaunchedEffect(key1 = Unit) {
         groupVm.processIntent(
             GroupLinksIntent.Initialization(groupName = groupName)
+        )
+        groupVm.processIntent(
+            GroupLinksIntent.OnSearchQueryUpdate("")
         )
 
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -81,7 +88,18 @@ fun AllLinksOfGroupScreen(
             color = TitleColor,
             modifier = Modifier.padding(horizontal = 18.dp)
         )
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+        SearchField(
+            initialText = state.value.searchQuery,
+            placeholderText = stringResource(id = R.string.search_here),
+            modifier = Modifier.padding(horizontal = 18.dp),
+            onValueChanged = {
+                scope.launch {
+                    groupVm.processIntent(GroupLinksIntent.OnSearchQueryUpdate(it))
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
