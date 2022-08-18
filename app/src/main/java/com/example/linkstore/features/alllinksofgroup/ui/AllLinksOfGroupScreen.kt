@@ -7,9 +7,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -26,6 +28,7 @@ import com.example.linkstore.R
 import com.example.linkstore.common.component.LinkDetailsListComponent
 import com.example.linkstore.common.component.SearchField
 import com.example.linkstore.features.savelink.data.models.appmodel.LinkAppModel
+import com.example.linkstore.ui.theme.Pink
 import com.example.linkstore.ui.theme.SubtitleColor
 import com.example.linkstore.ui.theme.TitleColor
 import kotlinx.coroutines.launch
@@ -100,37 +103,47 @@ fun AllLinksOfGroupScreen(
             }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 18.dp, vertical = 4.dp),
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            items(items = state.value.linksList) { item ->
-                LinkDetailsListComponent(
-                    linkAppModel = item,
-                    onLinkClicked = {
-                        scope.launch {
-                            groupVm.processIntent(
-                                GroupLinksIntent.OnLinkClickedToOpen(it.originalLink)
-                            )
-                        }
-                    },
-                    onEditClicked = {
-                        scope.launch {
-                            groupVm.processIntent(
-                                GroupLinksIntent.OnEditClicked(it)
-                            )
-                        }
-                    },
-                    onDeleteClicked = {
-                        scope.launch {
-                            groupVm.processIntent(
-                                GroupLinksIntent.OnDeleteClicked(it)
-                            )
-                        }
-                    }
+            if (state.value.isLoading) {
+                CircularProgressIndicator(
+                    color = Pink
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 4.dp),
+            ) {
+                items(items = state.value.linksList) { item ->
+                    LinkDetailsListComponent(
+                        linkAppModel = item,
+                        onLinkClicked = {
+                            scope.launch {
+                                groupVm.processIntent(
+                                    GroupLinksIntent.OnLinkClickedToOpen(it.originalLink)
+                                )
+                            }
+                        },
+                        onEditClicked = {
+                            scope.launch {
+                                groupVm.processIntent(
+                                    GroupLinksIntent.OnEditClicked(it)
+                                )
+                            }
+                        },
+                        onDeleteClicked = {
+                            scope.launch {
+                                groupVm.processIntent(
+                                    GroupLinksIntent.OnDeleteClicked(it)
+                                )
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
         }
     }

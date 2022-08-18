@@ -7,7 +7,8 @@ data class GroupLinksState(
     val groupName: String = "",
     val linksList: List<LinkAppModel> = listOf(),
     val shouldShowNoLinksForQuery: Boolean = false,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val isLoading: Boolean = true
 )
 
 sealed class GroupLinksIntent {
@@ -51,7 +52,8 @@ sealed class GroupLinksPartialChange : BasePartialChange<GroupLinksState> {
                 is LinksForTheGroup -> {
                     oldState.copy(
                         shouldShowNoLinksForQuery = false,
-                        linksList = linksList
+                        linksList = linksList,
+                        isLoading = false
                     )
                 }
                 is NoLinksForTheGroup -> {
@@ -60,7 +62,8 @@ sealed class GroupLinksPartialChange : BasePartialChange<GroupLinksState> {
                 NoLinksForTheQuery -> {
                     oldState.copy(
                         shouldShowNoLinksForQuery = true,
-                        linksList = listOf()
+                        linksList = listOf(),
+                        isLoading = false
                     )
                 }
                 is OnQueryUpdate -> {
